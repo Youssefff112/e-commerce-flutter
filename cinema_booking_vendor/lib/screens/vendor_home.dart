@@ -1163,11 +1163,17 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
   }
 
   Widget _buildSeatsGridForSlot(List<int> bookedSeats, BuildContext context) {
-    // Calculate responsive seat size based on screen width
+    // Calculate responsive seat size based on available width
     final screenWidth = MediaQuery.of(context).size.width;
-    final padding = 32.0;
-    final seatSize = ((screenWidth - padding) / 14)
-        .clamp(24.0, 40.0); // Fit 11 seats + aisle + spacing
+    final isMobile = screenWidth < 800;
+    final dialogWidth = isMobile ? screenWidth * 0.9 : 600;
+    final availableWidth = dialogWidth - 80; // Account for dialog padding
+
+    // Row 5 has 11 seats - use this as the constraint
+    // Formula: (11 * seatSize) + (10 * spacing) = availableWidth
+    // With spacing = seatSize * 0.12, we get:
+    // seatSize * (11 + 10*0.12) = seatSize * 12.2 = availableWidth
+    final seatSize = (availableWidth / 12.2).clamp(15.0, 32.0);
     final aisleWidth = seatSize * 1.8;
     final seatSpacing = seatSize * 0.12;
 
@@ -1184,16 +1190,16 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
                 // Left 4 seats
                 ...List.generate(4, (colIndex) {
                   final seatIndex = startSeat + colIndex;
-                  return _buildSeatWidget(
-                      seatIndex, bookedSeats, seatSize, seatSpacing);
+                  return _buildSeatWidget(seatIndex, bookedSeats, seatSize,
+                      seatSpacing, colIndex == 3);
                 }),
                 // Aisle - width of 2 seats
                 SizedBox(width: aisleWidth),
                 // Right 5 seats
                 ...List.generate(5, (colIndex) {
                   final seatIndex = startSeat + colIndex + 4;
-                  return _buildSeatWidget(
-                      seatIndex, bookedSeats, seatSize, seatSpacing);
+                  return _buildSeatWidget(seatIndex, bookedSeats, seatSize,
+                      seatSpacing, colIndex == 4);
                 }),
               ],
             ),
@@ -1206,8 +1212,8 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(11, (colIndex) {
               final seatIndex = 36 + colIndex;
-              return _buildSeatWidget(
-                  seatIndex, bookedSeats, seatSize, seatSpacing);
+              return _buildSeatWidget(seatIndex, bookedSeats, seatSize,
+                  seatSpacing, colIndex == 10);
             }),
           ),
         ),
@@ -1215,12 +1221,12 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
     );
   }
 
-  Widget _buildSeatWidget(
-      int index, List<int> bookedSeats, double seatSize, double seatSpacing) {
+  Widget _buildSeatWidget(int index, List<int> bookedSeats, double seatSize,
+      double seatSpacing, bool isLastSeat) {
     final isBooked = bookedSeats.contains(index);
 
     return Padding(
-      padding: EdgeInsets.only(right: seatSpacing),
+      padding: EdgeInsets.only(right: isLastSeat ? 0 : seatSpacing),
       child: Container(
         width: seatSize,
         height: seatSize,
