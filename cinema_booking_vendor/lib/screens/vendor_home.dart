@@ -250,374 +250,716 @@ class _VendorHomeState extends State<VendorHome> {
   @override
   Widget build(BuildContext context) {
     final dataService = Provider.of<MockDataService>(context, listen: false);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 800;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cinema Vendor Dashboard'),
+        title: Text(
+          'Cinema Vendor Dashboard',
+          style: TextStyle(fontSize: isMobile ? 16 : 20),
+        ),
         elevation: 2,
       ),
-      body: Row(
-        children: [
-          // Left Panel - Add Movie
-          Expanded(
-            flex: 2,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.purple.shade50,
-                border: Border(right: BorderSide(color: Colors.grey.shade300)),
-              ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Add New Movie',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _titleCtl,
-                        decoration: InputDecoration(
-                          labelText: 'Movie Title *',
-                          prefixIcon: const Icon(Icons.movie),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                        validator: (v) => v!.isEmpty ? 'Required' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _descCtl,
-                        decoration: InputDecoration(
-                          labelText: 'Description *',
-                          prefixIcon: const Icon(Icons.description),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                        maxLines: 3,
-                        validator: (v) => v!.isEmpty ? 'Required' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text('Time Slots (up to 3):',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _time1Ctl,
-                        decoration: InputDecoration(
-                          labelText: 'Time Slot 1',
-                          prefixIcon: const Icon(Icons.access_time),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _time2Ctl,
-                        decoration: InputDecoration(
-                          labelText: 'Time Slot 2',
-                          prefixIcon: const Icon(Icons.access_time),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _time3Ctl,
-                        decoration: InputDecoration(
-                          labelText: 'Time Slot 3',
-                          prefixIcon: const Icon(Icons.access_time),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (_pickedImage != null)
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.green.shade100,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.check_circle,
-                                  color: Colors.green),
-                              const SizedBox(width: 8),
-                              const Text('Image selected'),
-                              const Spacer(),
-                              IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () =>
-                                    setState(() => _pickedImage = null),
-                              ),
-                            ],
-                          ),
-                        ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: () => _pickImage(ImageSource.gallery),
-                              icon: const Icon(Icons.photo_library),
-                              label: const Text('Gallery'),
-                              style: OutlinedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: () => _pickImage(ImageSource.camera),
-                              icon: const Icon(Icons.camera_alt),
-                              label: const Text('Camera'),
-                              style: OutlinedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          onPressed: _addMovie,
-                          icon: const Icon(Icons.add),
-                          label: const Text('Add Movie',
-                              style: TextStyle(fontSize: 16)),
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Right Panel - Movies List
-          Expanded(
-            flex: 3,
-            child: Column(
+      body: isMobile
+          ? _buildMobileLayout(dataService)
+          : Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(color: Colors.grey.shade300, blurRadius: 4)
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.movie_filter, size: 28),
-                      const SizedBox(width: 12),
-                      const Text('Movies & Bookings',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      const Spacer(),
-                      IconButton(
-                        icon: Badge(
-                          label: Text(
-                              '${_notificationService.notifications.length}'),
-                          isLabelVisible:
-                              _notificationService.notifications.isNotEmpty,
-                          child: const Icon(Icons.notifications),
+                // Left Panel - Add Movie
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.purple.shade50,
+                      border: Border(
+                          right: BorderSide(color: Colors.grey.shade300)),
+                    ),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Add New Movie',
+                                style: TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _titleCtl,
+                              decoration: InputDecoration(
+                                labelText: 'Movie Title *',
+                                prefixIcon: const Icon(Icons.movie),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              validator: (v) => v!.isEmpty ? 'Required' : null,
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _descCtl,
+                              decoration: InputDecoration(
+                                labelText: 'Description *',
+                                prefixIcon: const Icon(Icons.description),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              maxLines: 3,
+                              validator: (v) => v!.isEmpty ? 'Required' : null,
+                            ),
+                            const SizedBox(height: 16),
+                            const Text('Time Slots (up to 3):',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _time1Ctl,
+                              decoration: InputDecoration(
+                                labelText: 'Time Slot 1',
+                                prefixIcon: const Icon(Icons.access_time),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _time2Ctl,
+                              decoration: InputDecoration(
+                                labelText: 'Time Slot 2',
+                                prefixIcon: const Icon(Icons.access_time),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _time3Ctl,
+                              decoration: InputDecoration(
+                                labelText: 'Time Slot 3',
+                                prefixIcon: const Icon(Icons.access_time),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            if (_pickedImage != null)
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade100,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.check_circle,
+                                        color: Colors.green),
+                                    const SizedBox(width: 8),
+                                    const Text('Image selected'),
+                                    const Spacer(),
+                                    IconButton(
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () =>
+                                          setState(() => _pickedImage = null),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () =>
+                                        _pickImage(ImageSource.gallery),
+                                    icon: const Icon(Icons.photo_library),
+                                    label: const Text('Gallery'),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () =>
+                                        _pickImage(ImageSource.camera),
+                                    icon: const Icon(Icons.camera_alt),
+                                    label: const Text('Camera'),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton.icon(
+                                onPressed: _addMovie,
+                                icon: const Icon(Icons.add),
+                                label: const Text('Add Movie',
+                                    style: TextStyle(fontSize: 16)),
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        onPressed: _showNotificationPanel,
-                        tooltip: 'View Notifications',
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Right Panel - Movies List
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.shade300, blurRadius: 4)
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.movie_filter, size: 28),
+                            const SizedBox(width: 12),
+                            const Text('Movies & Bookings',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                            const Spacer(),
+                            IconButton(
+                              icon: Badge(
+                                label: Text(
+                                    '${_notificationService.notifications.length}'),
+                                isLabelVisible: _notificationService
+                                    .notifications.isNotEmpty,
+                                child: const Icon(Icons.notifications),
+                              ),
+                              onPressed: _showNotificationPanel,
+                              tooltip: 'View Notifications',
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            labelText: 'Search movies',
+                            prefixIcon: const Icon(Icons.search),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () {
+                                      _searchController.clear();
+                                      setState(() => _searchQuery = '');
+                                    },
+                                  )
+                                : null,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
+                          ),
+                          onChanged: (v) => setState(() => _searchQuery = v),
+                        ),
+                      ),
+                      Expanded(
+                        child: StreamBuilder<List<Movie>>(
+                          stream: dataService.moviesStream,
+                          initialData: dataService.getMovies(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return const Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.movie_outlined,
+                                        size: 64, color: Colors.grey),
+                                    SizedBox(height: 16),
+                                    Text('No movies yet',
+                                        style: TextStyle(
+                                            fontSize: 18, color: Colors.grey)),
+                                    SizedBox(height: 8),
+                                    Text('Add your first movie!',
+                                        style: TextStyle(color: Colors.grey)),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            var movies = snapshot.data!;
+
+                            // Filter movies by search query
+                            if (_searchQuery.isNotEmpty) {
+                              movies = movies
+                                  .where((m) => m.title
+                                      .toLowerCase()
+                                      .contains(_searchQuery.toLowerCase()))
+                                  .toList();
+                            }
+
+                            if (movies.isEmpty) {
+                              return const Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.search_off,
+                                        size: 64, color: Colors.grey),
+                                    SizedBox(height: 16),
+                                    Text('No movies found',
+                                        style: TextStyle(
+                                            fontSize: 18, color: Colors.grey)),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return ListView.builder(
+                              padding: const EdgeInsets.all(12),
+                              itemCount: movies.length,
+                              itemBuilder: (context, index) {
+                                final movie = movies[index];
+                                final totalBooked =
+                                    dataService.getTotalBookedSeats(movie.id);
+
+                                return Card(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 8),
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.all(16),
+                                    leading: CircleAvatar(
+                                      radius: 30,
+                                      backgroundColor: Colors.purple.shade100,
+                                      child: Icon(Icons.movie,
+                                          color: Colors.purple.shade700,
+                                          size: 32),
+                                    ),
+                                    title: Text(movie.title,
+                                        style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold)),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 4),
+                                        Text(movie.description,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: totalBooked > 20
+                                                    ? Colors.green.shade100
+                                                    : Colors.orange.shade100,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Text(
+                                                '$totalBooked/47 seats booked',
+                                                style: TextStyle(
+                                                  color: totalBooked > 20
+                                                      ? Colors.green.shade900
+                                                      : Colors.orange.shade900,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                                '${movie.timeSlots.length} time slots',
+                                                style: const TextStyle(
+                                                    fontSize: 12)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.visibility,
+                                              color: Colors.blue),
+                                          onPressed: () =>
+                                              _showSeatsDialog(movie),
+                                          tooltip: 'View seats',
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete,
+                                              color: Colors.red),
+                                          onPressed: () =>
+                                              _deleteMovie(movie.id),
+                                          tooltip: 'Delete',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      labelText: 'Search movies',
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() => _searchQuery = '');
-                              },
-                            )
-                          : null,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      filled: true,
-                      fillColor: Colors.grey.shade50,
-                    ),
-                    onChanged: (v) => setState(() => _searchQuery = v),
-                  ),
-                ),
-                Expanded(
-                  child: StreamBuilder<List<Movie>>(
-                    stream: dataService.moviesStream,
-                    initialData: dataService.getMovies(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.movie_outlined,
-                                  size: 64, color: Colors.grey),
-                              SizedBox(height: 16),
-                              Text('No movies yet',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.grey)),
-                              SizedBox(height: 8),
-                              Text('Add your first movie!',
-                                  style: TextStyle(color: Colors.grey)),
-                            ],
-                          ),
-                        );
-                      }
+              ],
+            ),
+          ),;
+        ],
+      ),
+    );
+  }
 
-                      var movies = snapshot.data!;
-
-                      // Filter movies by search query
-                      if (_searchQuery.isNotEmpty) {
-                        movies = movies
-                            .where((m) => m.title
-                                .toLowerCase()
-                                .contains(_searchQuery.toLowerCase()))
-                            .toList();
-                      }
-
-                      if (movies.isEmpty) {
-                        return const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.search_off,
-                                  size: 64, color: Colors.grey),
-                              SizedBox(height: 16),
-                              Text('No movies found',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.grey)),
-                            ],
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: movies.length,
-                        itemBuilder: (context, index) {
-                          final movie = movies[index];
-                          final totalBooked =
-                              dataService.getTotalBookedSeats(movie.id);
-
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.all(16),
-                              leading: CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Colors.purple.shade100,
-                                child: Icon(Icons.movie,
-                                    color: Colors.purple.shade700, size: 32),
-                              ),
-                              title: Text(movie.title,
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 4),
-                                  Text(movie.description,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: totalBooked > 20
-                                              ? Colors.green.shade100
-                                              : Colors.orange.shade100,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Text(
-                                          '$totalBooked/47 seats booked',
-                                          style: TextStyle(
-                                            color: totalBooked > 20
-                                                ? Colors.green.shade900
-                                                : Colors.orange.shade900,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                          '${movie.timeSlots.length} time slots',
-                                          style: const TextStyle(fontSize: 12)),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.visibility,
-                                        color: Colors.blue),
-                                    onPressed: () => _showSeatsDialog(movie),
-                                    tooltip: 'View seats',
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red),
-                                    onPressed: () => _deleteMovie(movie.id),
-                                    tooltip: 'Delete',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
+  Widget _buildMobileLayout(MockDataService dataService) {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          TabBar(
+            labelColor: Colors.purple.shade700,
+            indicatorColor: Colors.purple.shade700,
+            tabs: const [
+              Tab(icon: Icon(Icons.add), text: 'Add Movie'),
+              Tab(icon: Icon(Icons.movie_filter), text: 'Movies'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _buildAddMoviePanel(),
+                _buildMoviesPanel(dataService),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAddMoviePanel() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Add New Movie',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _titleCtl,
+              decoration: InputDecoration(
+                labelText: 'Movie Title *',
+                prefixIcon: const Icon(Icons.movie),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              validator: (v) => v!.isEmpty ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _descCtl,
+              decoration: InputDecoration(
+                labelText: 'Description *',
+                prefixIcon: const Icon(Icons.description),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              maxLines: 3,
+              validator: (v) => v!.isEmpty ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            const Text('Time Slots:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _time1Ctl,
+              decoration: InputDecoration(
+                labelText: 'Time Slot 1',
+                prefixIcon: const Icon(Icons.access_time),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _time2Ctl,
+              decoration: InputDecoration(
+                labelText: 'Time Slot 2',
+                prefixIcon: const Icon(Icons.access_time),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _time3Ctl,
+              decoration: InputDecoration(
+                labelText: 'Time Slot 3',
+                prefixIcon: const Icon(Icons.access_time),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (_pickedImage != null)
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.green),
+                    const SizedBox(width: 8),
+                    const Text('Image selected'),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => setState(() => _pickedImage = null),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    icon: const Icon(Icons.photo_library),
+                    label: const Text('Gallery'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    icon: const Icon(Icons.camera_alt),
+                    label: const Text('Camera'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _addMovie,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Add Movie',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoviesPanel(MockDataService dataService) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(color: Colors.grey.shade300, blurRadius: 4)
+            ],
+          ),
+          child: Row(
+            children: [
+              const Expanded(
+                child: Text('Movies & Bookings',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+              IconButton(
+                icon: Badge(
+                  label: Text('${_notificationService.notifications.length}'),
+                  isLabelVisible:
+                      _notificationService.notifications.isNotEmpty,
+                  child: const Icon(Icons.notifications),
+                ),
+                onPressed: _showNotificationPanel,
+                tooltip: 'Notifications',
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              labelText: 'Search movies',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _searchQuery.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        setState(() {
+                          _searchQuery = '';
+                          _searchController.clear();
+                        });
+                      },
+                    )
+                  : null,
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onChanged: (value) {
+              setState(() => _searchQuery = value.toLowerCase());
+            },
+          ),
+        ),
+        Expanded(
+          child: StreamBuilder<List<Movie>>(
+            stream: dataService.moviesStream,
+            builder: (context, snapshot) {
+              final movies = snapshot.data ?? dataService.getMovies();
+              final filteredMovies = movies.where((m) {
+                return _searchQuery.isEmpty ||
+                    m.title.toLowerCase().contains(_searchQuery) ||
+                    m.description.toLowerCase().contains(_searchQuery);
+              }).toList();
+
+              if (filteredMovies.isEmpty) {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.movie_outlined, size: 64, color: Colors.grey),
+                      SizedBox(height: 16),
+                      Text('No movies found',
+                          style: TextStyle(fontSize: 16, color: Colors.grey)),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: filteredMovies.length,
+                itemBuilder: (context, i) {
+                  final movie = filteredMovies[i];
+                  final totalBooked = dataService.getTotalBookedSeats(movie.id);
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        child: Icon(Icons.movie),
+                      ),
+                      title: Text(movie.title,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 4),
+                          Text(movie.description,
+                              maxLines: 2, overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: totalBooked > 20
+                                  ? Colors.green.shade100
+                                  : Colors.orange.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '$totalBooked/47 seats booked',
+                              style: TextStyle(
+                                color: totalBooked > 20
+                                    ? Colors.green.shade900
+                                    : Colors.orange.shade900,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.visibility,
+                                color: Colors.blue),
+                            onPressed: () => _showSeatsDialog(movie),
+                            tooltip: 'View',
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteMovie(movie.id),
+                            tooltip: 'Delete',
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
