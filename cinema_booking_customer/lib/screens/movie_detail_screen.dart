@@ -193,27 +193,37 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   Widget _buildSeatsGrid(List<int> booked) {
     // Layout: Rows 1-4: 4 seats + aisle + 5 seats = 9 seats per row (36 total)
     // Last row: seats 37-47 (11 seats) without any gaps
+
+    // Calculate responsive seat size based on screen width
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = 32.0;
+    final seatSize = ((screenWidth - padding) / 14)
+        .clamp(24.0, 40.0); // Fit 11 seats + aisle + spacing
+    final aisleWidth = seatSize * 1.8;
+    final seatSpacing = seatSize * 0.12;
     return Column(
       children: [
         // Rows 1-4 with 4-gap-5 pattern
         ...List.generate(4, (rowIndex) {
           final startSeat = rowIndex * 9;
           return Padding(
-            padding: const EdgeInsets.only(bottom: 6.0),
+            padding: EdgeInsets.only(bottom: seatSpacing * 1.5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Left 4 seats
                 ...List.generate(4, (colIndex) {
                   final seatIndex = startSeat + colIndex;
-                  return _buildSeatWidget(seatIndex, booked);
+                  return _buildSeatWidget(
+                      seatIndex, booked, seatSize, seatSpacing);
                 }),
                 // Aisle - width of 2 seats
-                const SizedBox(width: 88),
+                SizedBox(width: aisleWidth),
                 // Right 5 seats
                 ...List.generate(5, (colIndex) {
                   final seatIndex = startSeat + colIndex + 4;
-                  return _buildSeatWidget(seatIndex, booked);
+                  return _buildSeatWidget(
+                      seatIndex, booked, seatSize, seatSpacing);
                 }),
               ],
             ),
@@ -221,12 +231,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         }),
         // Last row: seats 37-47 (11 seats) no gaps
         Padding(
-          padding: const EdgeInsets.only(bottom: 6.0),
+          padding: EdgeInsets.only(bottom: seatSpacing * 1.5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(11, (colIndex) {
               final seatIndex = 36 + colIndex; // seats 37-47 (index 36-46)
-              return _buildSeatWidget(seatIndex, booked);
+              return _buildSeatWidget(seatIndex, booked, seatSize, seatSpacing);
             }),
           ),
         ),
@@ -234,7 +244,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     );
   }
 
-  Widget _buildSeatWidget(int index, List<int> booked) {
+  Widget _buildSeatWidget(
+      int index, List<int> booked, double seatSize, double seatSpacing) {
     final isBooked = booked.contains(index);
     final isSelected = _selectedSeats.contains(index);
     Color color;
@@ -252,7 +263,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(right: 4.0),
+      padding: EdgeInsets.only(right: seatSpacing),
       child: GestureDetector(
         onTap: isBooked
             ? null
@@ -266,18 +277,18 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 });
               },
         child: Container(
-          width: 36,
-          height: 36,
+          width: seatSize,
+          height: seatSize,
           decoration: BoxDecoration(
             color: color,
             border: Border.all(color: borderColor, width: 1.5),
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(4),
           ),
           child: Center(
             child: Text(
               '${index + 1}',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: seatSize * 0.3,
                 fontWeight: FontWeight.bold,
                 color: isBooked ? Colors.white : Colors.black87,
               ),
