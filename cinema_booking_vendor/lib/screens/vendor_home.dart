@@ -54,13 +54,17 @@ class _VendorHomeState extends State<VendorHome> {
   }
 
   void _showNotificationPanel() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isMobile = screenWidth < 800;
+
     showDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
-          width: 500,
-          height: 600,
+          width: isMobile ? screenWidth * 0.9 : 500,
+          height: isMobile ? screenHeight * 0.7 : 600,
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,12 +72,17 @@ class _VendorHomeState extends State<VendorHome> {
               Row(
                 children: [
                   Icon(Icons.notifications,
-                      color: Colors.purple.shade700, size: 28),
-                  const SizedBox(width: 12),
-                  const Text('Booking Notifications',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                  const Spacer(),
+                      color: Colors.purple.shade700, size: isMobile ? 24 : 28),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Booking Notifications',
+                      style: TextStyle(
+                        fontSize: isMobile ? 18 : 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
