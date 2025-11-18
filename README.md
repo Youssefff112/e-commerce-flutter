@@ -7,15 +7,17 @@ Cinema Booking Flutter (Vendor + Customer)
 - Authentication uses local storage (SharedPreferences)
 - Data is shared in memory between app instances
 
-## Testing Setup (Step-by-Step)
+## Setup Instructions
 
 ### Prerequisites
 
 1. **Flutter SDK** - Install from https://flutter.dev/docs/get-started/install
-2. **VS Code Extensions** - Flutter and Dart extensions (already installed)
-3. **Firebase Account** - Create at https://console.firebase.google.com
+2. **Windows Desktop Development** - Run `flutter config --enable-windows-desktop`
+3. Check installation: `flutter doctor`
 
-### Install Dependencies
+### Installation Steps
+
+After cloning this repository:
 
 ```powershell
 # Customer App
