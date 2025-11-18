@@ -1,30 +1,50 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:cinema_booking_vendor/main.dart';
+import 'package:cinema_booking_vendor/services/mock_data_service.dart';
+import 'package:cinema_booking_vendor/models/movie.dart';
+import 'package:cinema_booking_vendor/models/time_slot.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('MockDataService singleton works correctly', () {
+    final instance1 = MockDataService();
+    final instance2 = MockDataService();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Both should reference the same instance
+    expect(identical(instance1, instance2), true);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  test('MockDataService initializes with movies', () {
+    final dataService = MockDataService();
+    dataService.initialize();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify initial movies exist
+    final movies = dataService.getMovies();
+    expect(movies.isNotEmpty, true);
+    expect(movies.length, greaterThan(0));
+  });
+
+  test('MockDataService can add movies', () {
+    final dataService = MockDataService();
+    dataService.initialize();
+
+    final initialCount = dataService.getMovies().length;
+
+    // Create a new movie
+    final testMovie = Movie(
+      id: 'test-1',
+      title: 'Test Movie',
+      description: 'Test description',
+      timeSlots: [
+        TimeSlot(time: '12:00 PM', bookedSeats: []),
+      ],
+      createdAt: DateTime.now(),
+    );
+
+    // Add the movie
+    dataService.addMovie(testMovie);
+
+    // Verify movie was added
+    final movies = dataService.getMovies();
+    expect(movies.length, initialCount + 1);
+    expect(movies.any((m) => m.title == 'Test Movie'), true);
   });
 }

@@ -810,7 +810,8 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
     // Calculate responsive seat size based on screen width
     final screenWidth = MediaQuery.of(context).size.width;
     final padding = 32.0;
-    final seatSize = ((screenWidth - padding) / 14).clamp(24.0, 40.0); // Fit 11 seats + aisle + spacing
+    final seatSize = ((screenWidth - padding) / 14)
+        .clamp(24.0, 40.0); // Fit 11 seats + aisle + spacing
     final aisleWidth = seatSize * 1.8;
     final seatSpacing = seatSize * 0.12;
 
