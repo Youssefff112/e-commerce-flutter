@@ -1031,12 +1031,18 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
   @override
   Widget build(BuildContext context) {
     final slot = widget.movie.timeSlots[_selectedSlotIndex];
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isMobile = screenWidth < 800;
 
     return AlertDialog(
-      title: Text('${widget.movie.title} - Bookings'),
+      title: Text(
+        '${widget.movie.title} - Bookings',
+        style: TextStyle(fontSize: isMobile ? 16 : 20),
+      ),
       content: SizedBox(
-        width: 600,
-        height: 500,
+        width: isMobile ? screenWidth * 0.9 : 600,
+        height: isMobile ? screenHeight * 0.7 : 500,
         child: Column(
           children: [
             // Time slot tabs
@@ -1116,18 +1122,21 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Time: ${slot.time}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.purple.shade900,
+                  Flexible(
+                    child: Text(
+                      'Time: ${slot.time}',
+                      style: TextStyle(
+                        fontSize: isMobile ? 14 : 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.purple.shade900,
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 8),
                   Text(
-                    '${slot.bookedSeats.length} seats booked',
+                    '${slot.bookedSeats.length} seats',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: isMobile ? 12 : 14,
                       color: Colors.purple.shade700,
                     ),
                   ),
