@@ -637,9 +637,6 @@ class _VendorHomeState extends State<VendorHome> {
                 ),
               ],
             ),
-          ),;
-        ],
-      ),
     );
   }
 
@@ -803,7 +800,8 @@ class _VendorHomeState extends State<VendorHome> {
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 child: const Text('Add Movie',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -819,21 +817,19 @@ class _VendorHomeState extends State<VendorHome> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white,
-            boxShadow: [
-              BoxShadow(color: Colors.grey.shade300, blurRadius: 4)
-            ],
+            boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 4)],
           ),
           child: Row(
             children: [
               const Expanded(
                 child: Text('Movies & Bookings',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
               IconButton(
                 icon: Badge(
                   label: Text('${_notificationService.notifications.length}'),
-                  isLabelVisible:
-                      _notificationService.notifications.isNotEmpty,
+                  isLabelVisible: _notificationService.notifications.isNotEmpty,
                   child: const Icon(Icons.notifications),
                 ),
                 onPressed: _showNotificationPanel,
