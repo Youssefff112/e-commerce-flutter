@@ -665,7 +665,10 @@ class _VendorHomeState extends State<VendorHome> {
           Expanded(
             child: TabBarView(
               children: [
-                _buildAddMoviePanel(),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: _buildAddMoviePanel(),
+                ),
                 _buildMoviesPanel(dataService),
               ],
             ),
@@ -814,33 +817,51 @@ class _VendorHomeState extends State<VendorHome> {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: OutlinedButton(
                     onPressed: () => _pickImage(ImageSource.gallery),
-                    icon: Icon(Icons.photo_library, size: isMobile ? 18 : 24),
-                    label: Text(
-                      'Gallery',
-                      style: TextStyle(fontSize: isMobile ? 13 : 14),
-                    ),
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(
                         vertical: isMobile ? 10 : 12,
                       ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.photo_library, size: isMobile ? 16 : 20),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            'Gallery',
+                            style: TextStyle(fontSize: isMobile ? 12 : 14),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: OutlinedButton(
                     onPressed: () => _pickImage(ImageSource.camera),
-                    icon: Icon(Icons.camera_alt, size: isMobile ? 18 : 24),
-                    label: Text(
-                      'Camera',
-                      style: TextStyle(fontSize: isMobile ? 13 : 14),
-                    ),
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(
                         vertical: isMobile ? 10 : 12,
                       ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.camera_alt, size: isMobile ? 16 : 20),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            'Camera',
+                            style: TextStyle(fontSize: isMobile ? 12 : 14),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
