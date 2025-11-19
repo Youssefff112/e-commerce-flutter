@@ -1144,6 +1144,18 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
               ),
             ),
             const SizedBox(height: 16),
+            // Legend
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildLegendItem(
+                    Colors.white, 'Available', Colors.grey.shade300),
+                const SizedBox(width: 16),
+                _buildLegendItem(
+                    Colors.grey.shade400, 'Booked', Colors.grey.shade600),
+              ],
+            ),
+            const SizedBox(height: 16),
             // Seat grid for selected time slot
             Expanded(
               child: SingleChildScrollView(
@@ -1173,7 +1185,7 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
     // Formula: (11 * seatSize) + (10 * spacing) = availableWidth
     // With spacing = seatSize * 0.12, we get:
     // seatSize * (11 + 10*0.12) = seatSize * 12.2 = availableWidth
-    final seatSize = (availableWidth / 12.2).clamp(15.0, 32.0);
+    final seatSize = (availableWidth / 12.5).clamp(15.0, 32.0);
     final aisleWidth = seatSize * 1.8;
     final seatSpacing = seatSize * 0.12;
 
@@ -1233,7 +1245,7 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
         decoration: BoxDecoration(
           color: isBooked ? Colors.grey.shade400 : Colors.white,
           border: Border.all(
-            color: isBooked ? Colors.grey.shade600 : Colors.blue.shade200,
+            color: isBooked ? Colors.grey.shade600 : Colors.grey.shade300,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(4),
@@ -1242,13 +1254,32 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
           child: Text(
             '${index + 1}',
             style: TextStyle(
-              fontSize: seatSize * 0.3,
-              fontWeight: FontWeight.bold,
+              fontSize: seatSize * 0.35,
+              fontWeight: FontWeight.w600,
               color: isBooked ? Colors.white : Colors.black87,
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String label, Color borderColor) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            color: color,
+            border: Border.all(color: borderColor, width: 1.5),
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(label, style: const TextStyle(fontSize: 12)),
+      ],
     );
   }
 }

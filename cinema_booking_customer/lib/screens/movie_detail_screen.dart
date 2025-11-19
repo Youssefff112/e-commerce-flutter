@@ -118,9 +118,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                   const SizedBox(height: 16),
 
                   // Seats Grid
-                  SizedBox(
-                      height: 400, child: _buildSeatsGrid(bookedSeatsForSlot)),
-                  const SizedBox(height: 20),
+                  _buildSeatsGrid(bookedSeatsForSlot),
+                  const SizedBox(height: 16),
 
                   // Book Button
                   SizedBox(
