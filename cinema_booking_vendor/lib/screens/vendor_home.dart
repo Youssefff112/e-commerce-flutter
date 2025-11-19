@@ -676,16 +676,24 @@ class _VendorHomeState extends State<VendorHome> {
   }
 
   Widget _buildAddMoviePanel() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 800;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(isMobile ? 12.0 : 16.0),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Add New Movie',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
+            Text(
+              'Add New Movie',
+              style: TextStyle(
+                fontSize: isMobile ? 18 : 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: isMobile ? 12 : 16),
             TextFormField(
               controller: _titleCtl,
               decoration: InputDecoration(
@@ -695,10 +703,15 @@ class _VendorHomeState extends State<VendorHome> {
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.white,
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: isMobile ? 12 : 16,
+                  horizontal: 12,
+                ),
               ),
+              style: TextStyle(fontSize: isMobile ? 14 : 16),
               validator: (v) => v!.isEmpty ? 'Required' : null,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: isMobile ? 8 : 12),
             TextFormField(
               controller: _descCtl,
               decoration: InputDecoration(
@@ -708,14 +721,24 @@ class _VendorHomeState extends State<VendorHome> {
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.white,
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: isMobile ? 12 : 16,
+                  horizontal: 12,
+                ),
               ),
-              maxLines: 3,
+              maxLines: isMobile ? 2 : 3,
+              style: TextStyle(fontSize: isMobile ? 14 : 16),
               validator: (v) => v!.isEmpty ? 'Required' : null,
             ),
-            const SizedBox(height: 12),
-            const Text('Time Slots:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            SizedBox(height: isMobile ? 8 : 12),
+            Text(
+              'Time Slots:',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: isMobile ? 14 : 16,
+              ),
+            ),
+            SizedBox(height: isMobile ? 6 : 8),
             TextFormField(
               controller: _time1Ctl,
               decoration: InputDecoration(
@@ -725,9 +748,14 @@ class _VendorHomeState extends State<VendorHome> {
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.white,
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: isMobile ? 10 : 16,
+                  horizontal: 12,
+                ),
               ),
+              style: TextStyle(fontSize: isMobile ? 14 : 16),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: isMobile ? 6 : 8),
             TextFormField(
               controller: _time2Ctl,
               decoration: InputDecoration(
@@ -737,9 +765,14 @@ class _VendorHomeState extends State<VendorHome> {
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.white,
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: isMobile ? 10 : 16,
+                  horizontal: 12,
+                ),
               ),
+              style: TextStyle(fontSize: isMobile ? 14 : 16),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: isMobile ? 6 : 8),
             TextFormField(
               controller: _time3Ctl,
               decoration: InputDecoration(
@@ -749,7 +782,12 @@ class _VendorHomeState extends State<VendorHome> {
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.white,
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: isMobile ? 10 : 16,
+                  horizontal: 12,
+                ),
               ),
+              style: TextStyle(fontSize: isMobile ? 14 : 16),
             ),
             const SizedBox(height: 12),
             if (_pickedImage != null)
@@ -772,16 +810,21 @@ class _VendorHomeState extends State<VendorHome> {
                   ],
                 ),
               ),
-            const SizedBox(height: 12),
+            SizedBox(height: isMobile ? 8 : 12),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _pickImage(ImageSource.gallery),
-                    icon: const Icon(Icons.photo_library),
-                    label: const Text('Gallery'),
+                    icon: Icon(Icons.photo_library, size: isMobile ? 18 : 24),
+                    label: Text(
+                      'Gallery',
+                      style: TextStyle(fontSize: isMobile ? 13 : 14),
+                    ),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        vertical: isMobile ? 10 : 12,
+                      ),
                     ),
                   ),
                 ),
@@ -789,28 +832,39 @@ class _VendorHomeState extends State<VendorHome> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _pickImage(ImageSource.camera),
-                    icon: const Icon(Icons.camera_alt),
-                    label: const Text('Camera'),
+                    icon: Icon(Icons.camera_alt, size: isMobile ? 18 : 24),
+                    label: Text(
+                      'Camera',
+                      style: TextStyle(fontSize: isMobile ? 13 : 14),
+                    ),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        vertical: isMobile ? 10 : 12,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: isMobile ? 12 : 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _addMovie,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(
+                    vertical: isMobile ? 14 : 16,
+                  ),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Add Movie',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Text(
+                  'Add Movie',
+                  style: TextStyle(
+                    fontSize: isMobile ? 15 : 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
@@ -898,62 +952,93 @@ class _VendorHomeState extends State<VendorHome> {
                 );
               }
 
+              final screenWidth = MediaQuery.of(context).size.width;
+              final isMobile = screenWidth < 800;
+
               return ListView.builder(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(isMobile ? 8 : 12),
                 itemCount: filteredMovies.length,
                 itemBuilder: (context, i) {
                   final movie = filteredMovies[i];
                   final totalBooked = dataService.getTotalBookedSeats(movie.id);
                   return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      leading: const CircleAvatar(
-                        child: Icon(Icons.movie),
-                      ),
-                      title: Text(movie.title,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    margin: EdgeInsets.only(bottom: isMobile ? 8 : 12),
+                    child: Padding(
+                      padding: EdgeInsets.all(isMobile ? 8 : 12),
+                      child: Row(
                         children: [
-                          const SizedBox(height: 4),
-                          Text(movie.description,
-                              maxLines: 2, overflow: TextOverflow.ellipsis),
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: totalBooked > 20
-                                  ? Colors.green.shade100
-                                  : Colors.orange.shade100,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '$totalBooked/47 seats booked',
-                              style: TextStyle(
-                                color: totalBooked > 20
-                                    ? Colors.green.shade900
-                                    : Colors.orange.shade900,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
+                          CircleAvatar(
+                            radius: isMobile ? 20 : 24,
+                            child: Icon(Icons.movie, size: isMobile ? 20 : 24),
+                          ),
+                          SizedBox(width: isMobile ? 8 : 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  movie.title,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: isMobile ? 14 : 16,
+                                  ),
+                                ),
+                                if (!isMobile) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    movie.description,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                                const SizedBox(height: 6),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isMobile ? 6 : 8,
+                                    vertical: isMobile ? 2 : 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: totalBooked > 20
+                                        ? Colors.green.shade100
+                                        : Colors.orange.shade100,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    '$totalBooked/47',
+                                    style: TextStyle(
+                                      color: totalBooked > 20
+                                          ? Colors.green.shade900
+                                          : Colors.orange.shade900,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: isMobile ? 10 : 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
                           IconButton(
-                            icon: const Icon(Icons.visibility,
-                                color: Colors.blue),
+                            icon: Icon(
+                              Icons.visibility,
+                              color: Colors.blue,
+                              size: isMobile ? 20 : 24,
+                            ),
                             onPressed: () => _showSeatsDialog(movie),
                             tooltip: 'View',
+                            padding: EdgeInsets.all(isMobile ? 4 : 8),
+                            constraints: const BoxConstraints(),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                              size: isMobile ? 20 : 24,
+                            ),
                             onPressed: () => _deleteMovie(movie.id),
                             tooltip: 'Delete',
+                            padding: EdgeInsets.all(isMobile ? 4 : 8),
+                            constraints: const BoxConstraints(),
                           ),
                         ],
                       ),
@@ -1185,7 +1270,7 @@ class _SeatsDialogWidgetState extends State<_SeatsDialogWidget> {
     // Formula: (11 * seatSize) + (10 * spacing) = availableWidth
     // With spacing = seatSize * 0.12, we get:
     // seatSize * (11 + 10*0.12) = seatSize * 12.2 = availableWidth
-    final seatSize = (availableWidth / 12.5).clamp(15.0, 32.0);
+    final seatSize = (availableWidth / 13.0).clamp(14.0, 32.0);
     final aisleWidth = seatSize * 1.8;
     final seatSpacing = seatSize * 0.12;
 
